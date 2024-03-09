@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:parking/Widgets/CustomerDrawer.dart';
 import 'package:parking/data/Data.dart';
-import 'package:parking/models/Autoriza.dart';
+import 'package:parking/Guardado/Autoriza.dart';
 import 'package:parking/widgets/CameraAdmon.dart';
 
 class Pconfi extends StatefulWidget {

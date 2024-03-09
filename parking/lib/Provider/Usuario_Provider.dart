@@ -28,17 +28,36 @@ class UsuarioProvider {
   }
 
   Future<List<Usuario>> getUser() async {
-    final url = '$_endpoint/parking/user/iduser.json';
-    final resp = await http.get(Uri.parse(url));
+    try {
+      final url = '$_endpoint/parking/user/iduser.json';
+      final resp = await http.get(Uri.parse(url));
 
-    if (resp.statusCode == 200) {
-      String body = utf8.decode(resp.bodyBytes);
-      final jsonData = jsonDecode(body);
-      final user = User.fromJsonList(jsonData);
-      return user.items;
-    } else {
-      throw Exception("Ocurrio Algo ${resp.statusCode}");
+      if (resp.statusCode == 200) {
+        final jsonData = jsonDecode(resp.body);
+
+        if (jsonData != null && jsonData is Map<String, dynamic>) {
+          List<Usuario> usuarios = [];
+
+          jsonData.forEach((key, userJson) {
+            if (userJson is Map<String, dynamic>) {
+              final user = Usuario.fromJson(userJson);
+              user.id = key;
+              usuarios.add(user);
+            }
+          });
+
+          return usuarios;
+        } else {
+          print("La respuesta de la API no es un Map válido.");
+        }
+      } else {
+        throw Exception("Ocurrio Algo ${resp.statusCode}");
+      }
+    } catch (e) {
+      print("Error al obtener usuarios: $e");
     }
+
+    return []; // Devuelve una lista vacía en caso de error o excepción.
   }
 
   Future<bool> updateusuario(Usuario user) async {

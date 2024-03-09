@@ -1,4 +1,4 @@
-import 'package:parking/models/Guest.dart';
+import 'package:parking/Guardado/Guest.dart';
 
 class Autoriza{
   Autoriza({

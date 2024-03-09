@@ -1,4 +1,4 @@
-import 'package:parking/models/User.dart';
+import 'package:parking/Guardado/User.dart';
 
 class CxCadmin{
   CxCadmin({

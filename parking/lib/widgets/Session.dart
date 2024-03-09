@@ -1,44 +1,14 @@
-// ignore_for_file: prefer_final_fields
-
 import 'package:flutter/material.dart';
 import 'package:parking/Localstorage/Sharepreference.dart';
-import 'package:parking/Widgets/HomeUser.dart';
-import 'package:parking/models/CxCadmin.dart';
-import 'package:parking/data/Data.dart';
-import 'package:parking/models/User.dart';
-import 'package:parking/widgets/ConsultAdm.dart';
+import 'package:parking/Models/Usuario.dart';
+import 'package:parking/Provider/Usuario_Provider.dart';
+import 'package:parking/widgets/HomeUser.dart';
 
 class Session extends StatefulWidget {
   const Session({super.key});
   static const String nombre = 'inicio_S';
 
   State<Session> createState() => _SessionState();
-}
-
-class AuthService {
-  Future<String?> iniciarSesion(
-      String user, String password, List<CxCadmin> cxcadmin) async {
-    for (CxCadmin cxc in cxcadmin) {
-      for (User u in cxc.user) {
-        if (u.email == user && u.password == password) {
-          await _saveUserData(cxc, u);
-          return u.type;
-        }
-      }
-    }
-    return null;
-  }
-
-  Future<void> _saveUserData(CxCadmin cxc, User user) async {
-    final prefs = PrefernciaUsuario();
-    await prefs.initPrefs();
-
-    prefs.username = user.name;
-    prefs.anoadm = cxc.anoAdm;
-    prefs.mesadm = cxc.mesAdm;
-    prefs.admmes = user.admMes;
-    prefs.status = user.status;
-  }
 }
 
 class _SessionState extends State<Session> {
@@ -164,26 +134,40 @@ class _SessionState extends State<Session> {
     String password = _passwordController.text;
     bool _isloged = false;
 
-    //verificacion
-    String? inicio =
-        await AuthService().iniciarSesion(user, password, cxcadmin);
+    try {
+      List<Usuario> usuarios = await UsuarioProvider().getUser();
 
-    setState(() {
-      _isloged = inicio != null;
-    });
+      print("Usuarios obtenidos: $usuarios");
+
+      for (Usuario u in usuarios) {
+        if (u.mail == user && u.pass == password) {
+          _saveUserData(u);
+          _isloged = true;
+          break;
+        }
+      }
+    } catch (e) {
+      print("Error al obtener usuarios: $e");
+    }
 
     if (_isloged) {
       final prefs = PrefernciaUsuario();
       await prefs.initPrefs();
-      if (inicio == 'residente') {
-        Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => HomeUser()));
-      } else if (inicio == 'administrador') {
-        Navigator.of(context).push(MaterialPageRoute(
-            builder: (context) => ConsultAdm(
-                textv: '',
-                )));
-      }
+
+      Navigator.of(context)
+          .push(MaterialPageRoute(builder: (context) => HomeUser()));
+    } else {
+      // Lógica para manejar inicio de sesión fallido
+      // Puedes mostrar un mensaje de error, por ejemplo.
+      print("Inicio de sesión fallido");
     }
+  }
+
+  void _saveUserData(Usuario user) async {
+    final prefs = PrefernciaUsuario();
+    await prefs.initPrefs();
+
+    prefs.username = user.nameuser ?? '';
+    // Otros campos que quieras almacenar en las preferencias
   }
 }
