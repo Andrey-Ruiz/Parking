@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:parking/Widgets/CustomerDrawer.dart';
-import 'package:parking/widgets/registration.dart';
+import 'package:parking/Models/Propietario.dart';
+import 'package:parking/Provider/Propietario_Provider.dart';
+
 const List<String> list = <String>[
   'Seleccione la torre',
   'TORRE 1',
@@ -12,7 +13,7 @@ String dropdownValue = list.first;
 class Register extends StatefulWidget {
   const Register({super.key, required this.textv});
   final String textv;
- 
+
   static const String nombre = 'Regi';
 
   State<Register> createState() => _RegisterState();
@@ -20,6 +21,31 @@ class Register extends StatefulWidget {
 
 class _RegisterState extends State<Register> {
   bool estado = false;
+  final PropietarioProvider propietarioProvider = PropietarioProvider();
+  List<Propietario> owners = [];
+  Propietario? selectedOwner;
+  late TextEditingController _documentController = TextEditingController();
+  late TextEditingController _namesController = TextEditingController();
+  late TextEditingController _aptoController = TextEditingController();
+  late TextEditingController _nombreController = TextEditingController();
+  String _mensaje = '';
+
+  @override
+  void initState() {
+    super.initState();
+    loadOwners();
+  }
+
+  Future<void> loadOwners() async {
+    try {
+      final loadedOwners = await PropietarioProvider().getPropietario();
+      setState(() {
+        owners = loadedOwners;
+      });
+    } catch (e) {
+      print('Error al cargar propietarios: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +60,6 @@ class _RegisterState extends State<Register> {
           ),
         ],
       ),
-      drawer: const CustomerDrawer(),
       body: SafeArea(
         child: Column(
           children: [
@@ -46,16 +71,15 @@ class _RegisterState extends State<Register> {
               padding: EdgeInsets.only(left: 30.0, bottom: 5),
               child: Align(
                 alignment: Alignment.centerLeft,
-                child: Text('N. Documento', style: TextStyle(fontSize: 15)),
+                child: Text('N.Documento', style: TextStyle(fontSize: 15)),
               ),
             ),
             Container(
               margin: const EdgeInsets.only(left: 30, right: 30),
               //saldo cartera
               child: TextField(
-                enabled: false,
-                controller:
-                    TextEditingController(text: 'Documento de identidad'),
+                enabled: true,
+                controller: _documentController,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10.0),
@@ -78,31 +102,8 @@ class _RegisterState extends State<Register> {
               margin: const EdgeInsets.only(left: 30, right: 30),
               //saldo cartera
               child: TextField(
-                enabled: false,
-                controller: TextEditingController(text: 'persona autorizada'),
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10.0),
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(
-              height: 7.0,
-            ),
-            const Padding(
-              padding: EdgeInsets.only(left: 30.0, bottom: 5),
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: Text('No. Celular', style: TextStyle(fontSize: 15)),
-              ),
-            ),
-            Container(
-              margin: const EdgeInsets.only(left: 30, right: 30),
-              //saldo cartera
-              child: TextField(
-                enabled: false,
-                controller: TextEditingController(text: 'Celular'),
+                enabled: true,
+                controller: _namesController,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10.0),
@@ -153,8 +154,8 @@ class _RegisterState extends State<Register> {
               margin: const EdgeInsets.only(left: 30, right: 30),
               //saldo cartera
               child: TextField(
-                enabled: false,
-                controller: TextEditingController(text: '# apto'),
+                enabled: true,
+                controller: _aptoController,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10.0),
@@ -169,29 +170,16 @@ class _RegisterState extends State<Register> {
               'Verificar placa autorizar',
               style: TextStyle(fontSize: 15),
             ),
-
-            Row(
-              children: [
-                IconButton(
-                  padding: const EdgeInsets.only(left: 30,),
-                  icon: const Icon(Icons.camera, size: 30, color: Colors.grey),
-                  onPressed: () {
-                    Navigator.of(context).push(MaterialPageRoute(builder: (context) => registration()));
-                  },
-                ),
-                const Padding(
-                  padding: EdgeInsets.only(
-                    left: 30,
-                  ),
-                  child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text('Verificar Placa  Autorizar',
-                        style: TextStyle(fontSize: 15, color: Colors.grey)),
-                  ),
-                ),
-              ],
+            const Padding(
+              padding: EdgeInsets.only(
+                left: 30,
+              ),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Text('Verificar Placa  Autorizar',
+                    style: TextStyle(fontSize: 15, color: Colors.grey)),
+              ),
             ),
-
             const SizedBox(
               height: 7.0,
             ),
@@ -206,32 +194,8 @@ class _RegisterState extends State<Register> {
               margin: const EdgeInsets.only(left: 30, right: 30),
               //saldo cartera
               child: TextField(
-                enabled: false,
-                controller: TextEditingController(text: 'placa vehiculo'),
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10.0),
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(
-              height: 7.0,
-            ),
-            const Padding(
-              padding: EdgeInsets.only(left: 30.0, bottom: 5),
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: Text('Fecha limite de pago',
-                    style: TextStyle(fontSize: 15)),
-              ),
-            ),
-            Container(
-              margin: const EdgeInsets.only(left: 30, right: 30),
-              //saldo cartera
-              child: TextField(
-                enabled: false,
-                controller: TextEditingController(text: 'fecha pago'),
+                enabled: true,
+                controller: TextEditingController(text: ''),
                 decoration: InputDecoration(
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10.0),
@@ -241,12 +205,69 @@ class _RegisterState extends State<Register> {
             ),
             TextButton(
               onPressed: () {
-             },
+                _registrarPropietario();
+              },
               child: const Text("REGISTRAR"),
-            )
+            ),
+            const SizedBox(
+              height: 7.0,
+            ),
+            TextField(
+              controller: _nombreController,
+              decoration: InputDecoration(labelText: 'Nombre del Propietario'),
+            ),
+            const SizedBox(
+              height: 7.0,
+            ),
+            ElevatedButton(
+              onPressed: () {
+                _eliminarPropietario();
+              },
+              child: Text('Eliminar'),
+            ),
+            const SizedBox(
+              height: 7.0,
+            ),
+            Text(_mensaje, style: TextStyle(fontSize: 18.0, color: Colors.red)),
           ],
         ),
       ),
     );
+  }
+
+  void _registrarPropietario() {
+    // Aquí obtenemos los valores de los cuadros de texto
+    String documentNumber = _documentController.text;
+    String names = _namesController.text;
+    String apto = _aptoController.text;
+
+    // Aquí llamamos a la función del provider para crear al propietario
+    propietarioProvider.crearpropietario(Propietario(
+      id: documentNumber,
+      name: names,
+      apto: apto,
+      torre: dropdownValue,
+      idconjunto: '',
+    ));
+  }
+
+  void _eliminarPropietario() async {
+    final nombre = _nombreController.text;
+
+    if (nombre.isNotEmpty) {
+      final propietarioProvider = PropietarioProvider();
+
+      final resultado = await propietarioProvider.borrarPropietario(nombre);
+
+      setState(() {
+        _mensaje = resultado == 1
+            ? 'Propietario eliminado con éxito.'
+            : 'No se encontró al propietario.';
+      });
+    } else {
+      setState(() {
+        _mensaje = 'Por favor, ingresa el nombre del propietario.';
+      });
+    }
   }
 }
