@@ -1,0 +1,14 @@
+luhe@gmail.com
+1234abcd
+------------------------
+dependecias:
+cupertino_icons: ^1.0.2
+  google_mlkit_text_recognition: ^0.5.0
+  camera: ^0.10.3+2
+  permission_handler: ^10.2.0
+  intl: ^0.17.0 #<-- ESTA ES LA DEL CALENDARIO NO LA BORREN
+  shared_preferences: 
+-----------------------
+Fue hecho en flutlab, asi que lo que pueden hacer es descargar las dependencias y 
+la otra es crear un nuevo proyecto agregar las dependencias que estan aqui y 
+despues mover archivo por archivo
